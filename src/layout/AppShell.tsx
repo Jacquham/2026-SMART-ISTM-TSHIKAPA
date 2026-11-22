@@ -3,6 +3,9 @@ import { Link, NavLink } from 'react-router-dom';
 import { espaces } from '../config/espaces';
 import { isSupabaseConfigured } from '../lib/supabase';
 
+// Adresse du logo (fonctionne en local et sur GitHub Pages).
+const LOGO = `${import.meta.env.BASE_URL}icon-512.png`;
+
 // Navigation responsive :
 // - ordinateur et tablette (≥ md) : menu latéral permanent ;
 // - téléphone : barre supérieure et menu coulissant.
@@ -41,7 +44,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
       {/* Menu latéral (ordinateur, tablette) */}
       <aside className="hidden w-64 shrink-0 border-r border-slate-200 bg-white md:block">
         <Link to="/" className="flex items-center gap-3 border-b border-slate-200 p-4">
-          <img src="/logo.png" alt="" className="h-10 w-auto" />
+          <img src={LOGO} alt="" className="h-10 w-auto" />
           <span className="text-sm font-bold leading-tight text-navy-700">SMART-ISTM-T'PA</span>
         </Link>
         <div className="max-h-[calc(100vh-5rem)] overflow-y-auto">{nav}</div>
@@ -51,7 +54,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
         {/* Barre supérieure (téléphone) */}
         <header className="safe-top sticky top-0 z-20 flex items-center justify-between border-b border-slate-200 bg-white px-4 py-3 md:hidden">
           <Link to="/" className="flex items-center gap-2">
-            <img src="/logo.png" alt="" className="h-8 w-auto" />
+            <img src={LOGO} alt="" className="h-8 w-auto" />
             <span className="text-sm font-bold text-navy-700">SMART-ISTM-T'PA</span>
           </Link>
           <button
@@ -84,5 +87,4 @@ export default function AppShell({ children }: { children: ReactNode }) {
       </div>
     </div>
   );
-}
-  
+      }
