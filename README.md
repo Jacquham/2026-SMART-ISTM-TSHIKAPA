@@ -1,7 +1,7 @@
 # SMART-ISTM-T'PA
 
 Système Moderne d'Administration et de Gestion Académique — ISTM-Tshikapa.
-Conçu par **SCIENCE-PLUS — Académie de la connaissance** (gestion : M. Jacques BAKUETU · +243 973 213 157).
+Conçu par **SCIENCE-PLUS — Académie de la connaissance** (maintenance : M. Jacques BAKUETU ·
 
 Référence fonctionnelle : *Cahier des charges général, version 1.2*.
 
