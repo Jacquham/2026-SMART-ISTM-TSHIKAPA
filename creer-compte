@@ -1,0 +1,98 @@
+import { createClient } from 'npm:@supabase/supabase-js@2';
+
+const cors = {
+  'Access-Control-Allow-Origin': 'https://jacquham.github.io',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+};
+
+const json = (corps: unknown, statut = 200) =>
+  new Response(JSON.stringify(corps), {
+    status: statut,
+    headers: { ...cors, 'Content-Type': 'application/json' },
+  });
+
+// Mot de passe provisoire : 12 caractères, sans caractères ambigus, avec lettre et chiffre.
+function motDePasseProvisoire(): string {
+  const lettres = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz';
+  const chiffres = '23456789';
+  const tout = lettres + chiffres;
+  const octets = crypto.getRandomValues(new Uint8Array(12));
+  const car = Array.from(octets, (o) => tout[o % tout.length]);
+  car[0] = lettres[octets[0] % lettres.length];
+  car[1] = chiffres[octets[1] % chiffres.length];
+  return car.join('');
+}
+
+Deno.serve(async (req) => {
+  if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: cors });
+  if (req.method !== 'POST') return json({ erreur: 'Méthode non autorisée.' }, 405);
+
+  const entete = req.headers.get('Authorization');
+  if (!entete) return json({ erreur: 'Connexion requise.' }, 401);
+
+  const url = Deno.env.get('SUPABASE_URL')!;
+  const anon = Deno.env.get('SUPABASE_ANON_KEY')!;
+  const service = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+
+  // 1. Qui appelle ? Il doit être administrateur central.
+  const appelant = createClient(url, anon, { global: { headers: { Authorization: entete } } });
+  const { data: utilisateur } = await appelant.auth.getUser();
+  if (!utilisateur?.user) return json({ erreur: 'Session invalide.' }, 401);
+  const { data: estAdmin } = await appelant.rpc('has_role', { p_role: 'admin_central' });
+  if (estAdmin !== true) return json({ erreur: 'Réservé à l’administrateur central.' }, 403);
+
+  // 2. Données reçues.
+  let corps: Record<string, unknown>;
+  try {
+    corps = await req.json();
+  } catch {
+    return json({ erreur: 'Données illisibles.' }, 400);
+  }
+  const nom = String(corps.nom ?? '').trim();
+  const prenom = String(corps.prenom ?? '').trim();
+  const email = String(corps.email ?? '').trim().toLowerCase();
+  const roleCode = String(corps.role_code ?? '').trim();
+  const sectionId = corps.section_id ? String(corps.section_id) : null;
+
+  if (!nom || !prenom) return json({ erreur: 'Nom et prénom obligatoires.' }, 400);
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return json({ erreur: 'Adresse e-mail invalide.' }, 400);
+  if (!roleCode) return json({ erreur: 'Rôle obligatoire.' }, 400);
+
+  const admin = createClient(url, service, { auth: { persistSession: false } });
+
+  const { data: role } = await admin.from('roles').select('code').eq('code', roleCode).maybeSingle();
+  if (!role) return json({ erreur: 'Rôle inconnu.' }, 400);
+
+  // 3. Création du compte, du profil et du rôle (annulée en bloc en cas d'erreur).
+  const mdp = motDePasseProvisoire();
+  const { data: cree, error: erreurCompte } = await admin.auth.admin.createUser({
+    email,
+    password: mdp,
+    email_confirm: true,
+  });
+  if (erreurCompte || !cree.user) {
+    const deja = (erreurCompte?.message ?? '').toLowerCase().includes('already');
+    return json({ erreur: deja ? 'Cette adresse e-mail a déjà un compte.' : 'Création du compte impossible.' }, 400);
+  }
+  const id = cree.user.id;
+
+  const { error: erreurProfil } = await admin.from('profiles').insert({ id, nom, prenom, email });
+  if (erreurProfil) {
+    await admin.auth.admin.deleteUser(id);
+    return json({ erreur: 'Création du profil impossible.' }, 500);
+  }
+
+  const { error: erreurRole } = await admin.from('user_roles').insert({
+    user_id: id,
+    role_code: roleCode,
+    section_id: sectionId,
+    attribue_par: utilisateur.user.id,
+  });
+  if (erreurRole) {
+    await admin.auth.admin.deleteUser(id);
+    return json({ erreur: 'Attribution du rôle impossible.' }, 500);
+  }
+
+  return json({ ok: true, email, mot_de_passe_provisoire: mdp });
+});
