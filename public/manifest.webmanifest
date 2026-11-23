@@ -1,0 +1,20 @@
+{
+  "name": "SMART-ISTM-T'PA",
+  "short_name": "SMART-ISTM",
+  "description": "Système Moderne d'Administration et de Gestion Académique - ISTM-Tshikapa",
+  "lang": "fr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FFFFFF",
+  "theme_color": "#1F3A6E",
+  "icons": [
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
