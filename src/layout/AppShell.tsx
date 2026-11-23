@@ -12,7 +12,7 @@ const LOGO = `${import.meta.env.BASE_URL}icon-512.png`;
 // - téléphone : barre supérieure et menu coulissant.
 export default function AppShell({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
-  const { profil, session, signOut } = useAuth();
+  const { profil, session, signOut, aRole } = useAuth();
 
   const nomAffiche =
     [profil?.prenom, profil?.nom].filter(Boolean).join(' ') || session?.user.email || '';
@@ -41,6 +41,17 @@ export default function AppShell({ children }: { children: ReactNode }) {
           {e.nom}
         </NavLink>
       ))}
+      {aRole('admin_central') && (
+        <NavLink
+          to="/comptes"
+          onClick={() => setOpen(false)}
+          className={({ isActive }) =>
+            `mt-2 rounded-lg px-3 py-2 text-sm font-semibold ${isActive ? 'bg-green-700 text-white' : 'bg-green-50 text-green-700 hover:bg-green-100'}`
+          }
+        >
+          Comptes (administrateur)
+        </NavLink>
+      )}
       {session && (
         <div className="mt-4 border-t border-slate-200 pt-4">
           <p className="px-3 text-xs text-slate-500">Connecté :</p>
@@ -101,4 +112,4 @@ export default function AppShell({ children }: { children: ReactNode }) {
       </div>
     </div>
   );
-}
+            }
