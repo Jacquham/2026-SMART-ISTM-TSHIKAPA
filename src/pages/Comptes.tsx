@@ -102,4 +102,98 @@ export default function Comptes() {
   if (!estAdmin) {
     return (
       <div className="card p-5">
-        <h1 className="text-lg font-semib
+        <h1 className="text-lg font-semibold text-navy-800">Accès réservé</h1>
+        <p className="mt-1 text-sm text-slate-600">Cette page est réservée à l'administrateur central.</p>
+      </div>
+    );
+  }
+
+  const champ = 'w-full rounded-lg border border-navy-200 bg-white px-3 py-2.5 text-base text-slate-900';
+
+  return (
+    <div className="space-y-6">
+      <section className="rounded-2xl bg-brand-gradient p-5 text-white shadow-card sm:p-6">
+        <p className="text-xs font-semibold uppercase tracking-wide text-gold-400">Utilisateurs et sécurité</p>
+        <h1 className="mt-1 text-2xl font-bold text-white">Comptes</h1>
+        <p className="mt-1 text-sm text-navy-100">Créer un compte, attribuer son rôle et lui remettre un accès provisoire.</p>
+      </section>
+
+      {resultat && (
+        <section className="card border-l-4 border-l-gold-500 p-4">
+          <h2 className="text-base font-semibold text-navy-800">Compte créé</h2>
+          <p className="mt-1 text-sm text-slate-700">Adresse : {resultat.email}</p>
+          <p className="mt-3 text-xs font-medium text-slate-500">Mot de passe provisoire (affiché une seule fois) :</p>
+          <p className="mt-1 break-all rounded-lg bg-gold-100 px-3 py-2 font-mono text-lg font-bold text-navy-900">
+            {resultat.mdp}
+          </p>
+          <div className="mt-3 flex gap-2">
+            <button type="button" onClick={copier} className="btn-secondary">
+              {copie ? 'Copié' : 'Copier'}
+            </button>
+            <button type="button" onClick={() => setResultat(null)} className="btn-primary">
+              J'ai noté, fermer
+            </button>
+          </div>
+          <p className="mt-3 text-xs text-slate-600">
+            Remettez-le en personne ou par un canal privé. La personne devra le remplacer dès sa première connexion.
+          </p>
+        </section>
+      )}
+
+      <section className="card p-4 sm:p-5">
+        <h2 className="text-base font-semibold text-navy-800">Nouveau compte</h2>
+        <form onSubmit={creer} className="mt-3 space-y-4">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <label htmlFor="nom" className="mb-1 block text-sm font-medium text-navy-800">
+                Nom
+              </label>
+              <input id="nom" required value={nom} onChange={(ev) => setNom(ev.target.value)} className={champ} />
+            </div>
+            <div>
+              <label htmlFor="prenom" className="mb-1 block text-sm font-medium text-navy-800">
+                Prénom
+              </label>
+              <input id="prenom" required value={prenom} onChange={(ev) => setPrenom(ev.target.value)} className={champ} />
+            </div>
+          </div>
+
+          <div>
+            <label htmlFor="mail" className="mb-1 block text-sm font-medium text-navy-800">
+              Adresse e-mail
+            </label>
+            <input
+              id="mail"
+              type="email"
+              required
+              value={email}
+              onChange={(ev) => setEmail(ev.target.value)}
+              className={champ}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="role" className="mb-1 block text-sm font-medium text-navy-800">
+              Rôle
+            </label>
+            <select id="role" required value={roleCode} onChange={(ev) => setRoleCode(ev.target.value)} className={champ}>
+              <option value="">Choisir un rôle…</option>
+              {roles.map((r) => (
+                <option key={r.code} value={r.code}>
+                  {r.libelle}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label htmlFor="section" className="mb-1 block text-sm font-medium text-navy-800">
+              Section ou département (facultatif)
+            </label>
+            <select id="section" value={sectionId} onChange={(ev) => setSectionId(ev.target.value)} className={champ}>
+              <option value="">Aucune (rôle pour toute l'institution)</option>
+              {sections.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.intitule}
+                </option>
+              ))}
