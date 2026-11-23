@@ -2,6 +2,7 @@ import { useState, type ReactNode } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { espaces } from '../config/espaces';
 import { isSupabaseConfigured } from '../lib/supabase';
+import { useAuth } from '../lib/auth';
 
 // Adresse du logo (fonctionne en local et sur GitHub Pages).
 const LOGO = `${import.meta.env.BASE_URL}icon-512.png`;
@@ -11,6 +12,10 @@ const LOGO = `${import.meta.env.BASE_URL}icon-512.png`;
 // - téléphone : barre supérieure et menu coulissant.
 export default function AppShell({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
+  const { profil, session, signOut } = useAuth();
+
+  const nomAffiche =
+    [profil?.prenom, profil?.nom].filter(Boolean).join(' ') || session?.user.email || '';
 
   const nav = (
     <nav className="flex flex-col gap-1 p-3" aria-label="Espaces de travail">
@@ -36,6 +41,15 @@ export default function AppShell({ children }: { children: ReactNode }) {
           {e.nom}
         </NavLink>
       ))}
+      {session && (
+        <div className="mt-4 border-t border-slate-200 pt-4">
+          <p className="px-3 text-xs text-slate-500">Connecté :</p>
+          <p className="px-3 pb-3 text-sm font-semibold text-navy-800">{nomAffiche}</p>
+          <button type="button" onClick={signOut} className="btn-secondary w-full">
+            Se déconnecter
+          </button>
+        </div>
+      )}
     </nav>
   );
 
@@ -87,4 +101,4 @@ export default function AppShell({ children }: { children: ReactNode }) {
       </div>
     </div>
   );
-      }
+}
