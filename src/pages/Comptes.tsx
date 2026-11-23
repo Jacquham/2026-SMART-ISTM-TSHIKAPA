@@ -197,3 +197,45 @@ export default function Comptes() {
                   {s.intitule}
                 </option>
               ))}
+                          </select>
+          </div>
+
+          {erreur && (
+            <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">
+              {erreur}
+            </p>
+          )}
+
+          <button type="submit" disabled={envoi} className="btn-primary w-full py-3">
+            {envoi ? 'Création…' : 'Créer le compte'}
+          </button>
+        </form>
+      </section>
+
+      <section>
+        <h2 className="mb-3 text-lg font-semibold text-navy-800">Comptes existants ({profils.length})</h2>
+        <ul className="space-y-2">
+          {profils.map((p) => {
+            const rolesDuCompte = attributions.filter((a) => a.user_id === p.id).map((a) => libelleRole(a.role_code));
+            return (
+              <li key={p.id} className="card p-3">
+                <p className="font-semibold text-navy-800">
+                  {p.prenom} {p.nom}
+                </p>
+                <p className="text-xs text-slate-500">{p.email}</p>
+                <p className="mt-2 flex flex-wrap gap-1.5">
+                  <span className={p.statut === 'actif' ? 'badge-ok' : 'badge-alerte'}>{p.statut}</span>
+                  {rolesDuCompte.map((r) => (
+                    <span key={r} className="rounded-full bg-navy-50 px-2.5 py-0.5 text-xs font-medium text-navy-700">
+                      {r}
+                    </span>
+                  ))}
+                </p>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+    </div>
+  );
+          }
