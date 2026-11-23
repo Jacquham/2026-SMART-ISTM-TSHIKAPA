@@ -15,6 +15,8 @@ type AuthState = {
   loading: boolean;
   session: Session | null;
   profil: Profil | null;
+  roles: string[];
+  aRole: (code: string) => boolean;
   signIn: (email: string, motDePasse: string) => Promise<string | null>;
   signOut: () => Promise<void>;
   changerMotDePasse: (nouveau: string) => Promise<string | null>;
@@ -25,6 +27,7 @@ const AuthContext = createContext<AuthState | null>(null);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [profil, setProfil] = useState<Profil | null>(null);
+  const [roles, setRoles] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(isSupabaseConfigured);
 
   // Suivi de la session (connexion, déconnexion, renouvellement du jeton).
@@ -38,28 +41,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(nouvelle);
       if (!nouvelle) {
         setProfil(null);
+        setRoles([]);
         setLoading(false);
       }
     });
     return () => abonnement.subscription.unsubscribe();
   }, []);
 
-  // Chargement du profil de la personne connectée.
+  // Chargement du profil et des rôles de la personne connectée.
   const userId = session?.user.id ?? null;
   useEffect(() => {
     if (!userId) return;
     let actif = true;
     setLoading(true);
-    supabase
-      .from('profiles')
-      .select('id, nom, prenom, email, statut, doit_changer_mdp')
-      .eq('id', userId)
-      .maybeSingle()
-      .then(({ data, error }) => {
-        if (!actif) return;
-        setProfil(error ? null : ((data as Profil | null) ?? null));
-        setLoading(false);
-      });
+    const aujourdhui = new Date().toISOString().slice(0, 10);
+    Promise.all([
+      supabase
+        .from('profiles')
+        .select('id, nom, prenom, email, statut, doit_changer_mdp')
+        .eq('id', userId)
+        .maybeSingle(),
+      supabase.from('user_roles').select('role_code, date_fin').eq('user_id', userId),
+    ]).then(([resProfil, resRoles]) => {
+      if (!actif) return;
+      setProfil(resProfil.error ? null : ((resProfil.data as Profil | null) ?? null));
+      const actifs = (resRoles.data ?? [])
+        .filter((r: { role_code: string; date_fin: string | null }) => !r.date_fin || r.date_fin >= aujourdhui)
+        .map((r: { role_code: string }) => r.role_code);
+      setRoles(resRoles.error ? [] : actifs);
+      setLoading(false);
+    });
     return () => {
       actif = false;
     };
@@ -92,8 +103,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return null;
   };
 
+  const aRole = (code: string): boolean => roles.includes(code);
+
   return (
-    <AuthContext.Provider value={{ loading, session, profil, signIn, signOut, changerMotDePasse }}>
+    <AuthContext.Provider value={{ loading, session, profil, roles, aRole, signIn, signOut, changerMotDePasse }}>
       {children}
     </AuthContext.Provider>
   );
@@ -103,4 +116,4 @@ export function useAuth(): AuthState {
   const ctx = useContext(AuthContext);
   if (!ctx) throw new Error('useAuth doit être utilisé à l’intérieur de AuthProvider');
   return ctx;
-      }
+    }
