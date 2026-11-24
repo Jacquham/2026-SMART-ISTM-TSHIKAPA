@@ -54,4 +54,22 @@ export default function Commission() {
     <div className="space-y-6">
       <section className="rounded-2xl bg-brand-gradient p-5 text-white shadow-card sm:p-6">
         <p className="text-xs font-semibold uppercase tracking-wide text-gold-400">Espace académique</p>
-        <h1 className="mt-1 text-2xl font-bol
+                <h1 className="mt-1 text-2xl font-bold text-white">Commission d'inscription</h1>
+        <p className="mt-1 text-sm text-navy-100">
+          Un membre propose une décision, le président du jury la valide.
+        </p>
+      </section>
+
+      <Seances seances={seances} peutCreer={peutGererSeances} onChange={charger} />
+      {peutCreerEtudiant && <NouvelEtudiant sections={sections} onChange={charger} />}
+      <Decisions
+        seances={seances}
+        etudiants={etudiants}
+        decisions={decisions}
+        peutProposer={peutProposer}
+        peutValider={peutValider}
+        onChange={charger}
+      />
+    </div>
+  );
+}
