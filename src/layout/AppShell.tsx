@@ -29,6 +29,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
       >
         Tableau de bord général
       </NavLink>
+
       {espaces.map((e) => (
         <NavLink
           key={e.id}
@@ -41,6 +42,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
           {e.nom}
         </NavLink>
       ))}
+
       {aRole('admin_central') && (
         <NavLink
           to="/comptes"
@@ -52,6 +54,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
           Comptes (administrateur)
         </NavLink>
       )}
+
       {session && (
         <div className="mt-4 border-t border-slate-200 pt-4">
           <p className="px-3 text-xs text-slate-500">Connecté :</p>
@@ -70,7 +73,9 @@ export default function AppShell({ children }: { children: ReactNode }) {
       <aside className="hidden w-64 shrink-0 border-r border-slate-200 bg-white md:block">
         <Link to="/" className="flex items-center gap-3 border-b border-slate-200 p-4">
           <img src={LOGO} alt="" className="h-10 w-auto" />
-          <span className="text-sm font-bold leading-tight text-navy-700">SMART-ISTM-T'PA</span>
+          <span className="text-sm font-bold leading-tight text-navy-700">
+            SMART-ISTM-T'PA
+          </span>
         </Link>
         <div className="max-h-[calc(100vh-5rem)] overflow-y-auto">{nav}</div>
       </aside>
@@ -80,8 +85,11 @@ export default function AppShell({ children }: { children: ReactNode }) {
         <header className="safe-top sticky top-0 z-20 flex items-center justify-between border-b border-slate-200 bg-white px-4 py-3 md:hidden">
           <Link to="/" className="flex items-center gap-2">
             <img src={LOGO} alt="" className="h-8 w-auto" />
-            <span className="text-sm font-bold text-navy-700">SMART-ISTM-T'PA</span>
+            <span className="text-sm font-bold text-navy-700">
+              SMART-ISTM-T'PA
+            </span>
           </Link>
+
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
@@ -92,8 +100,12 @@ export default function AppShell({ children }: { children: ReactNode }) {
             {open ? 'Fermer' : 'Menu'}
           </button>
         </header>
+
         {open && (
-          <div id="menu-mobile" className="fixed inset-x-0 bottom-0 top-[57px] z-30 overflow-y-auto bg-white md:hidden">
+          <div
+            id="menu-mobile"
+            className="fixed inset-x-0 bottom-0 top-[57px] z-30 overflow-y-auto bg-white md:hidden"
+          >
             {nav}
           </div>
         )}
@@ -106,8 +118,21 @@ export default function AppShell({ children }: { children: ReactNode }) {
 
         <main className="flex-1 p-4 sm:p-6 lg:p-8">{children}</main>
 
+        {/* Pied de page institutionnel */}
         <footer className="border-t border-slate-200 px-4 py-3 text-center text-xs text-slate-500">
-          Conçu par SCIENCE-PLUS — Académie de la connaissance · WhatsApp : +243 973 213 157
+          <p>
+            Conçu par SCIENCE-PLUS — Académie de la connaissance · WhatsApp : +243 973 213 157
+          </p>
+
+          <p className="mt-1">
+            <a
+              href="mailto:istmtshikapa2026@gmail.com"
+              className="hover:text-navy-700"
+            >
+              istmtshikapa2026@gmail.com
+            </a>
+            {' | '}Ville de Tshikapa
+          </p>
         </footer>
       </div>
     </div>
