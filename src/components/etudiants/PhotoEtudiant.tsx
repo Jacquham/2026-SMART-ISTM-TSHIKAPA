@@ -58,4 +58,27 @@ export default function PhotoEtudiant({ etudiantId, photoPath, peutModifier, onC
     <div className="flex items-center gap-4">
       <div className="h-32 w-24 shrink-0 overflow-hidden rounded-lg border border-navy-200 bg-navy-50">
         {url ? (
-          <img
+          <img src={url} alt="Photo passeport" className="h-full w-full object-cover" />
+        ) : (
+          <div className="flex h-full items-center justify-center px-2 text-center text-xs text-slate-500">
+            Pas de photo
+          </div>
+        )}
+      </div>
+      {peutModifier && (
+        <div>
+          <label className="btn-secondary cursor-pointer">
+            {envoi ? 'Envoi…' : photoPath ? 'Changer la photo' : 'Ajouter la photo'}
+            <input type="file" accept="image/*" className="hidden" onChange={choisir} disabled={envoi} />
+          </label>
+          <p className="mt-2 text-xs text-slate-500">Photo passeport, fond clair, visage de face.</p>
+          {erreur && (
+            <p role="alert" className="mt-2 text-xs text-red-600">
+              {erreur}
+            </p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
