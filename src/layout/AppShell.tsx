@@ -24,6 +24,10 @@ export default function AppShell({ children }: { children: ReactNode }) {
     aRole('membre_commission') ||
     aRole('president_jury');
 
+  const classeLien = (couleurActive: string, couleurRepos: string) =>
+    ({ isActive }: { isActive: boolean }) =>
+      `mt-2 rounded-lg px-3 py-2 text-sm font-semibold ${isActive ? couleurActive : couleurRepos}`;
+
   const nav = (
     <nav className="flex flex-col gap-1 p-3" aria-label="Espaces de travail">
       <NavLink
@@ -50,11 +54,18 @@ export default function AppShell({ children }: { children: ReactNode }) {
       ))}
       {voitCommission && (
         <NavLink
+          to="/etudiants"
+          onClick={() => setOpen(false)}
+          className={classeLien('bg-navy-700 text-white', 'bg-sky-50 text-sky-600 hover:bg-sky-100')}
+        >
+          Dossiers étudiants
+        </NavLink>
+      )}
+      {voitCommission && (
+        <NavLink
           to="/commission"
           onClick={() => setOpen(false)}
-          className={({ isActive }) =>
-            `mt-2 rounded-lg px-3 py-2 text-sm font-semibold ${isActive ? 'bg-navy-700 text-white' : 'bg-gold-100 text-navy-900 hover:bg-gold-400'}`
-          }
+          className={classeLien('bg-navy-700 text-white', 'bg-gold-100 text-navy-900 hover:bg-gold-400')}
         >
           Commission d'inscription
         </NavLink>
@@ -63,9 +74,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
         <NavLink
           to="/comptes"
           onClick={() => setOpen(false)}
-          className={({ isActive }) =>
-            `mt-2 rounded-lg px-3 py-2 text-sm font-semibold ${isActive ? 'bg-green-700 text-white' : 'bg-green-50 text-green-700 hover:bg-green-100'}`
-          }
+          className={classeLien('bg-green-700 text-white', 'bg-green-50 text-green-700 hover:bg-green-100')}
         >
           Comptes (administrateur)
         </NavLink>
@@ -130,4 +139,4 @@ export default function AppShell({ children }: { children: ReactNode }) {
       </div>
     </div>
   );
-                                                               }
+}
