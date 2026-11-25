@@ -26,6 +26,9 @@ export default function AppShell({ children }: { children: ReactNode }) {
 
   const voitSections = aRole('admin_central') || aRole('dg');
 
+  const voitEnseignants =
+    aRole('admin_central') || aRole('sgac') || aRole('dg') || aRole('chef_section');
+
   const classeLien = (couleurActive: string, couleurRepos: string) =>
     ({ isActive }: { isActive: boolean }) =>
       `mt-2 rounded-lg px-3 py-2 text-sm font-semibold ${isActive ? couleurActive : couleurRepos}`;
@@ -61,6 +64,15 @@ export default function AppShell({ children }: { children: ReactNode }) {
           className={classeLien('bg-navy-700 text-white', 'bg-navy-50 text-navy-700 hover:bg-navy-100')}
         >
           Sections et départements
+        </NavLink>
+      )}
+      {voitEnseignants && (
+        <NavLink
+          to="/enseignants"
+          onClick={() => setOpen(false)}
+          className={classeLien('bg-navy-700 text-white', 'bg-green-50 text-green-700 hover:bg-green-100')}
+        >
+          Enseignants
         </NavLink>
       )}
       {voitCommission && (
@@ -150,4 +162,4 @@ export default function AppShell({ children }: { children: ReactNode }) {
       </div>
     </div>
   );
-        }
+      }
