@@ -24,6 +24,8 @@ export default function AppShell({ children }: { children: ReactNode }) {
     aRole('membre_commission') ||
     aRole('president_jury');
 
+  const voitSections = aRole('admin_central') || aRole('dg');
+
   const classeLien = (couleurActive: string, couleurRepos: string) =>
     ({ isActive }: { isActive: boolean }) =>
       `mt-2 rounded-lg px-3 py-2 text-sm font-semibold ${isActive ? couleurActive : couleurRepos}`;
@@ -52,6 +54,15 @@ export default function AppShell({ children }: { children: ReactNode }) {
           {e.nom}
         </NavLink>
       ))}
+      {voitSections && (
+        <NavLink
+          to="/sections"
+          onClick={() => setOpen(false)}
+          className={classeLien('bg-navy-700 text-white', 'bg-navy-50 text-navy-700 hover:bg-navy-100')}
+        >
+          Sections et départements
+        </NavLink>
+      )}
       {voitCommission && (
         <NavLink
           to="/etudiants"
@@ -139,4 +150,4 @@ export default function AppShell({ children }: { children: ReactNode }) {
       </div>
     </div>
   );
-}
+        }
