@@ -7,6 +7,7 @@ import Login from './pages/Login';
 import ChangerMotDePasse from './pages/ChangerMotDePasse';
 import Comptes from './pages/Comptes';
 import Commission from './pages/Commission';
+import Etudiants from './pages/Etudiants';
 import { useAuth } from './lib/auth';
 import { isSupabaseConfigured } from './lib/supabase';
 
@@ -54,6 +55,7 @@ export default function App() {
         <Route path="/espace/:id" element={<EspacePage />} />
         <Route path="/comptes" element={<Comptes />} />
         <Route path="/commission" element={<Commission />} />
+        <Route path="/etudiants" element={<Etudiants />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </AppShell>
