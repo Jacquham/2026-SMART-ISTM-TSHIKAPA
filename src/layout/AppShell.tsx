@@ -75,6 +75,15 @@ export default function AppShell({ children }: { children: ReactNode }) {
           Enseignants
         </NavLink>
       )}
+      {voitEnseignants && (
+        <NavLink
+          to="/cours"
+          onClick={() => setOpen(false)}
+          className={classeLien('bg-navy-700 text-white', 'bg-gold-100 text-navy-900 hover:bg-gold-400')}
+        >
+          Cours et charges horaires
+        </NavLink>
+      )}
       {voitCommission && (
         <NavLink
           to="/etudiants"
@@ -162,4 +171,4 @@ export default function AppShell({ children }: { children: ReactNode }) {
       </div>
     </div>
   );
-      }
+          }
