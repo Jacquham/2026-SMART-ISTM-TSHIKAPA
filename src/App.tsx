@@ -10,6 +10,7 @@ import Commission from './pages/Commission';
 import Etudiants from './pages/Etudiants';
 import SectionsDepartements from './pages/SectionsDepartements';
 import Enseignants from './pages/Enseignants';
+import CoursPage from './pages/Cours';
 import { useAuth } from './lib/auth';
 import { isSupabaseConfigured } from './lib/supabase';
 
@@ -60,8 +61,9 @@ export default function App() {
         <Route path="/etudiants" element={<Etudiants />} />
         <Route path="/sections" element={<SectionsDepartements />} />
         <Route path="/enseignants" element={<Enseignants />} />
+        <Route path="/cours" element={<CoursPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </AppShell>
   );
-        }
+}
