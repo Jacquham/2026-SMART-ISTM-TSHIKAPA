@@ -11,6 +11,8 @@ import Etudiants from './pages/Etudiants';
 import SectionsDepartements from './pages/SectionsDepartements';
 import Enseignants from './pages/Enseignants';
 import CoursPage from './pages/Cours';
+import EspaceSection from './pages/EspaceSection';
+import RapportsRecus from './pages/RapportsRecus';
 import { useAuth } from './lib/auth';
 import { isSupabaseConfigured } from './lib/supabase';
 
@@ -62,6 +64,8 @@ export default function App() {
         <Route path="/sections" element={<SectionsDepartements />} />
         <Route path="/enseignants" element={<Enseignants />} />
         <Route path="/cours" element={<CoursPage />} />
+        <Route path="/ma-section" element={<EspaceSection />} />
+        <Route path="/rapports" element={<RapportsRecus />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </AppShell>
