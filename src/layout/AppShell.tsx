@@ -3,6 +3,7 @@ import { Link, NavLink } from 'react-router-dom';
 import { espaces } from '../config/espaces';
 import { isSupabaseConfigured } from '../lib/supabase';
 import { useAuth } from '../lib/auth';
+import { useNotifications } from '../lib/notifications';
 
 // Adresse du logo (fonctionne en local et sur GitHub Pages).
 const LOGO = `${import.meta.env.BASE_URL}icon-512.png`;
@@ -12,10 +13,16 @@ const LOGO = `${import.meta.env.BASE_URL}icon-512.png`;
 // - téléphone : barre supérieure et menu coulissant.
 export default function AppShell({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
+
   const { profil, session, signOut, aRole } = useAuth();
 
+  // Notifications des chefs de section et du SGAC.
+  const { total } = useNotifications();
+
   const nomAffiche =
-    [profil?.prenom, profil?.nom].filter(Boolean).join(' ') || session?.user.email || '';
+    [profil?.prenom, profil?.nom].filter(Boolean).join(' ') ||
+    session?.user.email ||
+    '';
 
   const voitCommission =
     aRole('admin_central') ||
@@ -26,75 +33,160 @@ export default function AppShell({ children }: { children: ReactNode }) {
 
   const voitSections = aRole('admin_central') || aRole('dg');
 
+  const voitMaSection = aRole('chef_section');
+
+  const voitRapports = aRole('sgac') || aRole('dg');
+
   const classeLien = (couleurActive: string, couleurRepos: string) =>
     ({ isActive }: { isActive: boolean }) =>
       `mt-2 rounded-lg px-3 py-2 text-sm font-semibold ${isActive ? couleurActive : couleurRepos}`;
 
   const nav = (
     <nav className="flex flex-col gap-1 p-3" aria-label="Espaces de travail">
+
       <NavLink
         to="/"
         end
         onClick={() => setOpen(false)}
         className={({ isActive }) =>
-          `rounded-lg px-3 py-2 text-sm font-medium ${isActive ? 'bg-navy-700 text-white' : 'text-navy-900 hover:bg-navy-50'}`
+          `rounded-lg px-3 py-2 text-sm font-medium ${
+            isActive
+              ? 'bg-navy-700 text-white'
+              : 'text-navy-900 hover:bg-navy-50'
+          }`
         }
       >
         Tableau de bord général
       </NavLink>
+
       {espaces.map((e) => (
         <NavLink
           key={e.id}
           to={`/espace/${e.id}`}
           onClick={() => setOpen(false)}
           className={({ isActive }) =>
-            `rounded-lg px-3 py-2 text-sm ${isActive ? 'bg-navy-700 text-white' : 'text-slate-700 hover:bg-navy-50'}`
+            `rounded-lg px-3 py-2 text-sm ${
+              isActive
+                ? 'bg-navy-700 text-white'
+                : 'text-slate-700 hover:bg-navy-50'
+            }`
           }
         >
           {e.nom}
         </NavLink>
       ))}
+
       {voitSections && (
         <NavLink
           to="/sections"
           onClick={() => setOpen(false)}
-          className={classeLien('bg-navy-700 text-white', 'bg-navy-50 text-navy-700 hover:bg-navy-100')}
+          className={classeLien(
+            'bg-navy-700 text-white',
+            'bg-navy-50 text-navy-700 hover:bg-navy-100'
+          )}
         >
           Sections et départements
         </NavLink>
       )}
+
       {voitCommission && (
         <NavLink
           to="/etudiants"
           onClick={() => setOpen(false)}
-          className={classeLien('bg-navy-700 text-white', 'bg-sky-50 text-sky-600 hover:bg-sky-100')}
+          className={classeLien(
+            'bg-navy-700 text-white',
+            'bg-sky-50 text-sky-600 hover:bg-sky-100'
+          )}
         >
           Dossiers étudiants
         </NavLink>
       )}
+
       {voitCommission && (
         <NavLink
           to="/commission"
           onClick={() => setOpen(false)}
-          className={classeLien('bg-navy-700 text-white', 'bg-gold-100 text-navy-900 hover:bg-gold-400')}
+          className={classeLien(
+            'bg-navy-700 text-white',
+            'bg-gold-100 text-navy-900 hover:bg-gold-400'
+          )}
         >
           Commission d'inscription
         </NavLink>
       )}
+
+      {/* NOUVEAU : ESPACE PERSONNEL DU CHEF DE SECTION */}
+      {voitMaSection && (
+        <NavLink
+          to="/ma-section"
+          onClick={() => setOpen(false)}
+          className={({ isActive }) =>
+            `mt-3 flex items-center justify-between rounded-lg px-3 py-3 text-sm font-semibold ${
+              isActive
+                ? 'bg-green-700 text-white'
+                : 'bg-green-50 text-green-800 hover:bg-green-100'
+            }`
+          }
+        >
+          <span>Ma section</span>
+
+          {total > 0 && (
+            <span className="ml-2 flex h-6 min-w-6 items-center justify-center rounded-full bg-red-600 px-2 text-xs font-bold text-white">
+              {total > 99 ? '99+' : total}
+            </span>
+          )}
+        </NavLink>
+      )}
+
+      {/* NOUVEAU : RAPPORTS DES SECTIONS POUR LE SGAC ET LE DG */}
+      {voitRapports && (
+        <NavLink
+          to="/rapports"
+          onClick={() => setOpen(false)}
+          className={({ isActive }) =>
+            `mt-2 flex items-center justify-between rounded-lg px-3 py-3 text-sm font-semibold ${
+              isActive
+                ? 'bg-blue-700 text-white'
+                : 'bg-blue-50 text-blue-800 hover:bg-blue-100'
+            }`
+          }
+        >
+          <span>Rapports des sections</span>
+
+          {aRole('sgac') && total > 0 && (
+            <span className="ml-2 flex h-6 min-w-6 items-center justify-center rounded-full bg-red-600 px-2 text-xs font-bold text-white">
+              {total > 99 ? '99+' : total}
+            </span>
+          )}
+        </NavLink>
+      )}
+
       {aRole('admin_central') && (
         <NavLink
           to="/comptes"
           onClick={() => setOpen(false)}
-          className={classeLien('bg-green-700 text-white', 'bg-green-50 text-green-700 hover:bg-green-100')}
+          className={classeLien(
+            'bg-green-700 text-white',
+            'bg-green-50 text-green-700 hover:bg-green-100'
+          )}
         >
           Comptes (administrateur)
         </NavLink>
       )}
+
       {session && (
         <div className="mt-4 border-t border-slate-200 pt-4">
           <p className="px-3 text-xs text-slate-500">Connecté :</p>
-          <p className="px-3 pb-3 text-sm font-semibold text-navy-800">{nomAffiche}</p>
-          <button type="button" onClick={signOut} className="btn-secondary w-full">
+
+          <p className="px-3 pb-3 text-sm font-semibold text-navy-800">
+            {nomAffiche}
+          </p>
+
+          <button
+            type="button"
+            onClick={signOut}
+            className="btn-secondary w-full"
+          >
             Se déconnecter
           </button>
         </div>
@@ -104,22 +196,37 @@ export default function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-screen md:flex">
+
       {/* Menu latéral (ordinateur, tablette) */}
       <aside className="hidden w-64 shrink-0 border-r border-slate-200 bg-white md:block">
-        <Link to="/" className="flex items-center gap-3 border-b border-slate-200 p-4">
+        <Link
+          to="/"
+          className="flex items-center gap-3 border-b border-slate-200 p-4"
+        >
           <img src={LOGO} alt="" className="h-10 w-auto" />
-          <span className="text-sm font-bold leading-tight text-navy-700">SMART-ISTM-T'PA</span>
+
+          <span className="text-sm font-bold leading-tight text-navy-700">
+            SMART-ISTM-T'PA
+          </span>
         </Link>
-        <div className="max-h-[calc(100vh-5rem)] overflow-y-auto">{nav}</div>
+
+        <div className="max-h-[calc(100vh-5rem)] overflow-y-auto">
+          {nav}
+        </div>
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
+
         {/* Barre supérieure (téléphone) */}
         <header className="safe-top sticky top-0 z-20 flex items-center justify-between border-b border-slate-200 bg-white px-4 py-3 md:hidden">
           <Link to="/" className="flex items-center gap-2">
             <img src={LOGO} alt="" className="h-8 w-auto" />
-            <span className="text-sm font-bold text-navy-700">SMART-ISTM-T'PA</span>
+
+            <span className="text-sm font-bold text-navy-700">
+              SMART-ISTM-T'PA
+            </span>
           </Link>
+
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
@@ -130,24 +237,32 @@ export default function AppShell({ children }: { children: ReactNode }) {
             {open ? 'Fermer' : 'Menu'}
           </button>
         </header>
+
         {open && (
-          <div id="menu-mobile" className="fixed inset-x-0 bottom-0 top-[57px] z-30 overflow-y-auto bg-white md:hidden">
+          <div
+            id="menu-mobile"
+            className="fixed inset-x-0 bottom-0 top-[57px] z-30 overflow-y-auto bg-white md:hidden"
+          >
             {nav}
           </div>
         )}
 
         {!isSupabaseConfigured && (
           <div className="bg-gold-400/20 px-4 py-2 text-xs text-slate-700">
-            Mode démonstration : la connexion à la base n'est pas configurée. Les données affichées sont fictives.
+            Mode démonstration : la connexion à la base n'est pas configurée.
+            Les données affichées sont fictives.
           </div>
         )}
 
-        <main className="flex-1 p-4 sm:p-6 lg:p-8">{children}</main>
+        <main className="flex-1 p-4 sm:p-6 lg:p-8">
+          {children}
+        </main>
 
         <footer className="border-t border-slate-200 px-4 py-3 text-center text-xs text-slate-500">
-          Conçu par SCIENCE-PLUS — Académie de la connaissance · WhatsApp : +243 973 213 157
+          Conçu par SCIENCE-PLUS — Académie de la connaissance · WhatsApp :
+          +243 973 213 157
         </footer>
       </div>
     </div>
   );
-          }
+      }
