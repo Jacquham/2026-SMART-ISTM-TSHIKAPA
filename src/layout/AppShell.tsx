@@ -139,6 +139,15 @@ export default function AppShell({ children }: { children: ReactNode }) {
           Comptes (administrateur)
         </NavLink>
       )}
+      {aRole('admin_central') && (
+        <NavLink
+          to="/reinitialiser-mdp"
+          onClick={() => setOpen(false)}
+          className={classeLien('bg-green-700 text-white', 'bg-green-50 text-green-700 hover:bg-green-100')}
+        >
+          Réinitialiser un mot de passe
+        </NavLink>
+      )}
       {session && (
         <div className="mt-4 border-t border-slate-200 pt-4">
           <p className="px-3 text-xs text-slate-500">Connecté :</p>
@@ -202,4 +211,4 @@ export default function AppShell({ children }: { children: ReactNode }) {
       </div>
     </div>
   );
-      }
+                                }
