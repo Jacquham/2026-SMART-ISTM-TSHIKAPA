@@ -6,6 +6,7 @@ import NotFound from './pages/NotFound';
 import Login from './pages/Login';
 import ChangerMotDePasse from './pages/ChangerMotDePasse';
 import Comptes from './pages/Comptes';
+import ReinitialiserMdp from './pages/ReinitialiserMdp';
 import Commission from './pages/Commission';
 import Etudiants from './pages/Etudiants';
 import SectionsDepartements from './pages/SectionsDepartements';
@@ -59,6 +60,7 @@ export default function App() {
         <Route path="/" element={<Dashboard />} />
         <Route path="/espace/:id" element={<EspacePage />} />
         <Route path="/comptes" element={<Comptes />} />
+        <Route path="/reinitialiser-mdp" element={<ReinitialiserMdp />} />
         <Route path="/commission" element={<Commission />} />
         <Route path="/etudiants" element={<Etudiants />} />
         <Route path="/sections" element={<SectionsDepartements />} />
